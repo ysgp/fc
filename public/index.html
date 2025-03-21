@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.0.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.2/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.2/firebase-auth.js"></script>
+    
+    <style>
+        /* 通用样式 */
+        .container { padding: 20px; }
+        .order-card { 
+            border: 1px solid #ccc;
+            padding: 15px;
+            margin: 10px;
+            border-radius: 8px;
+        }
+        .status-indicator {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <!-- 登录界面 -->
+    <div id="login-view" class="container">
+        <input type="email" id="email">
+        <input type="password" id="password">
+        <button onclick="login()">登录</button>
+    </div>
+
+    <!-- 生产界面 -->
+    <div id="production-view" class="container" style="display:none;">
+        <h2>今日生产清单</h2>
+        <div id="production-list"></div>
+    </div>
+
+    <!-- 柜台界面 -->
+    <div id="counter-view" class="container" style="display:none;">
+        <div class="order-controls">
+            <button onclick="showCreateOrderModal()">新增订单</button>
+            <input type="text" id="search-order" placeholder="搜索订单...">
+        </div>
+        <div id="order-list"></div>
+    </div>
+
+    <!-- 订单创建弹窗 -->
+    <div id="create-order-modal" style="display:none;">
+        <!-- 订单表单内容 -->
+    </div>
+
+<script>
+// Firebase初始化
+const firebaseConfig = {
+  apiKey: "AIzaSyCgPw3ir9lNG_vwbDZjOITXyxTeDtfG2D8",
+  authDomain: "fcbekeryoder.firebaseapp.com",
+  projectId: "fcbekeryoder",
+  storageBucket: "fcbekeryoder.firebasestorage.app",
+  messagingSenderId: "291208568020",
+  appId: "1:291208568020:web:b3ba86bb01bd6f88faaf41",
+  measurementId: "G-RF489VWJLN"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const auth = firebase.auth();
+
+// 用户认证
+function login() {
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    
+    auth.signInWithEmailAndPassword(email, password)
+       .then((user) => {
+           loadProperInterface(user);
+       }).catch((error) => {
+           alert('登录失败: ' + error.message);
+       });
+}
+
+// 生产界面数据加载
+function loadProductionView() {
+    const today = new Date();
+    const startOfDay = new Date(today.setHours(0,0,0,0));
+    
+    db.collection('Orders')
+      .where('PickupTime', '>=', startOfDay)
+      .onSnapshot((snapshot) => {
+          const orders = [];
+          snapshot.forEach(doc => {
+              orders.push({id: doc.id, ...doc.data()});
+          });
+          renderProductionList(orders);
+      });
+}
+
+// 渲染生产清单
+function renderProductionList(orders) {
+    const container = document.getElementById('production-list');
+    container.innerHTML = '';
+    
+    orders.forEach(order => {
+        const orderElement = document.createElement('div');
+        orderElement.className = 'order-card';
+        orderElement.innerHTML = `
+            <h3>订单号: ${order.OrderID}</h3>
+            <p>客户: ${order.CustomerName}</p>
+            <p>取货时间: ${order.PickupTime.toDate().toLocaleString()}</p>
+            <button onclick="printLabel('${order.id}')">打印标签</button>
+        `;
+        container.appendChild(orderElement);
+    });
+}
+
+// 打印标签功能
+function printLabel(orderId) {
+    db.collection('Orders').doc(orderId).get()
+      .then(doc => {
+          const labelContent = `
+              <div class="label">
+                  <h2>${doc.data().CustomerName}</h2>
+                  <p>订单号: ${doc.data().OrderID}</p>
+                  <p>电话: ${doc.data().PhoneNumber}</p>
+              </div>
+              <style>
+                  .label { border: 1px solid black; padding: 10px; }
+                  @media print { body { margin: 0; padding: 0; } }
+              </style>
+          `;
+          const printWindow = window.open('', '_blank');
+          printWindow.document.write(labelContent);
+          printWindow.print();
+      });
+}
+
+// 柜台界面订单操作
+function createNewOrder(orderData) {
+    const batch = db.batch();
+    
+    const orderRef = db.collection('Orders').doc();
+    batch.set(orderRef, {
+        ...orderData,
+        OrderDate: new Date(),
+        OrderStatus: '已接单',
+        PaymentStatus: '未付款'
+    });
+    
+    orderData.items.forEach(item => {
+        const detailRef = db.collection('OrderDetails').doc();
+        batch.set(detailRef, {
+            OrderID: orderRef.id,
+            ...item
+        });
+    });
+    
+    return batch.commit();
+}
+
+// 安全规则示例 (firestore.rules)
+service cloud.firestore {
+    match /databases/{database}/documents {
+        // 订单数据访问规则
+        match /Orders/{order} {
+            allow read: if request.auth != null;
+            allow write: if request.auth.token.isCounter == true;
+        }
+        
+        // 生产端只读规则
+        match /ProductionView/{doc} {
+            allow read: if request.auth != null;
+            allow write: if false;
+        }
+    }
+}
+</script>
+</body>
+</html>
