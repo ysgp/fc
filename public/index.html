@@ -2,10 +2,11 @@
 <html>
 <head>
     <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.0.2/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.2/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.2/firebase-auth.js"></script>
-    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.2/firebase-app.js";
+        import { getFirestore } from "https://www.gstatic.com/firebasejs/9.0.2/firebase-firestore.js";
+        import { getAuth } from "https://www.gstatic.com/firebasejs/9.0.2/firebase-auth.js";
+      </script>
     <style>
         /* 通用样式 */
         .container { padding: 20px; }
@@ -28,7 +29,7 @@
     <div id="login-view" class="container">
         <input type="email" id="email">
         <input type="password" id="password">
-        <button onclick="login()">登录</button>
+        <button id="loginBtn">登录</button>
     </div>
 
     <!-- 生产界面 -->
@@ -158,22 +159,6 @@ function createNewOrder(orderData) {
     return batch.commit();
 }
 
-// 安全规则示例 (firestore.rules)
-service cloud.firestore {
-    match /databases/{database}/documents {
-        // 订单数据访问规则
-        match /Orders/{order} {
-            allow read: if request.auth != null;
-            allow write: if request.auth.token.isCounter == true;
-        }
-        
-        // 生产端只读规则
-        match /ProductionView/{doc} {
-            allow read: if request.auth != null;
-            allow write: if false;
-        }
-    }
-}
 </script>
 </body>
 </html>
