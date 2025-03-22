@@ -1,0 +1,36 @@
+/* 响应式网格布局 */
+.order-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+}
+
+.order-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.status-badge {
+    padding: 0.3rem 0.6rem;
+    border-radius: 20px;
+    font-size: 0.9em;
+}
+
+.已接单 { background: #f0ad4e; }
+.制作中 { background: #5bc0de; }
+.已完成 { background: #5cb85c; }
+
+/* 打印优化 */
+@media print {
+    body { 
+        margin: 0;
+        padding: 1cm;
+    }
+    .label {
+        width: 80mm;
+        border: 2px solid #000;
+        padding: 5mm;
+    }
+}

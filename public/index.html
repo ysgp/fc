@@ -1,3 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>蛋糕店管理系统</title>
+    <link rel="stylesheet" href="/styles/main.css">
+    <link rel="stylesheet" href="/styles/print.css" media="print">
+</head>
+<body>
+    <!-- 柜台界面 -->
+    <div class="container">
+        <!-- 订单管理 -->
+        <div class="order-section">
+            <h1>订单管理 <button id="new-order" class="btn">➕ 新订单</button></h1>
+            <div class="search-box">
+                <input type="text" id="search" placeholder="搜索订单编号...">
+            </div>
+            <div id="order-list" class="order-grid"></div>
+        </div>
+
+        <!-- 生产看板 -->
+        <div class="production-section">
+            <h2>今日生产清单 <button id="print-all-labels" class="btn">🖨️ 打印全部标签</button></h2>
+            <div id="production-list" class="production-grid"></div>
+        </div>
+    </div>
+
 <!-- 订单模态框 -->
 <div id="order-modal" class="modal hidden">
     <div class="modal-content">
@@ -46,3 +74,10 @@
         </form>
     </div>
 </div>
+
+    <script type="module" src="/scripts/firebase.js"></script>
+    <script type="module" src="/scripts/orders.js"></script>
+    <script type="module" src="/scripts/production.js"></script>
+    <script type="module" src="/scripts/ui.js"></script>
+</body>
+</html>
