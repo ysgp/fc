@@ -7,29 +7,8 @@
     <link rel="stylesheet" href="/styles/styles.css">
 </head>
 <body>
-    <!-- 登录界面 -->
-    <div id="login-view" class="container">
-        <h1>蛋糕店管理系统</h1>
-        <div class="form-group">
-            <input type="email" id="email" placeholder="電子郵件" required>
-        </div>
-        <div class="form-group">
-            <input type="password" id="password" placeholder="密碼" required>
-        </div>
-        <button id="login-btn" class="btn">登入</button>
-    </div>
-
-    <!-- 生产界面 -->
-    <div id="production-view" class="container hidden">
-        <div class="header">
-            <h2>今日生產清單</h2>
-            <button id="refresh-btn" class="btn">刷新清單</button>
-        </div>
-        <div id="production-list"></div>
-    </div>
-
-    <!-- 柜台界面 -->
-    <div id="counter-view" class="container hidden">
+    <!-- 直接显示柜台界面 -->
+    <div id="counter-view" class="container">
         <div class="header">
             <h2>訂單管理</h2>
             <button id="new-order-btn" class="btn btn-primary">新增訂單</button>
@@ -45,16 +24,22 @@
                 <span class="close">&times;</span>
                 <h3>訂單詳情</h3>
                 <form id="order-form">
-                    <!-- 订单表单字段 -->
+                    <div class="form-group">
+                        <label>客戶姓名</label>
+                        <input type="text" id="customer-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>聯絡電話</label>
+                        <input type="tel" id="customer-phone" required>
+                    </div>
+                    <button type="submit" class="btn">提交訂單</button>
                 </form>
             </div>
         </div>
     </div>
 
     <script type="module" src="/scripts/firebase.js"></script>
-    <script type="module" src="/scripts/auth.js"></script>
     <script type="module" src="/scripts/orders.js"></script>
-    <script type="module" src="/scripts/production.js"></script>
     <script type="module" src="/scripts/ui.js"></script>
 </body>
 </html>
