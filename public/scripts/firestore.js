@@ -1,31 +1,27 @@
-import { db } from "./firebase-config.js";
-import { collection, addDoc, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/9.0.2/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+import { 
+    getFirestore, collection, doc, 
+    addDoc, getDocs, onSnapshot,
+    query, where, orderBy, serverTimestamp 
+} from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+import { 
+    getAuth, signInWithEmailAndPassword, 
+    signOut 
+} from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
 
-// 创建新订单
-export const createOrder = async (orderData) => {
-    const ordersRef = collection(db, 'Orders');
-    await addDoc(ordersRef, {
-        ...orderData,
-        orderDate: new Date(),
-        status: '已接单'
-    });
-};
+const firebaseConfig = {
+    apiKey: "AIzaSyCgPw3ir9lNG_vwbDZjOITXyxTeDtfG2D8",
+    authDomain: "fcbekeryoder.firebaseapp.com",
+    projectId: "fcbekeryoder",
+    storageBucket: "fcbekeryoder.firebasestorage.app",
+    messagingSenderId: "291208568020",
+    appId: "1:291208568020:web:b3ba86bb01bd6f88faaf41",
+    measurementId: "G-RF489VWJLN"
+  };
 
-// 实时监听今日订单
-export const listenTodayOrders = (callback) => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    
-    const q = query(
-        collection(db, 'Orders'),
-        where('pickupTime', '>=', today)
-    );
-    
-    return onSnapshot(q, (snapshot) => {
-        const orders = [];
-        snapshot.forEach(doc => {
-            orders.push({ id: doc.id, ...doc.data() });
-        });
-        callback(orders);
-    });
-};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+export { db, auth, collection, doc, addDoc, getDocs, onSnapshot, 
+         query, where, orderBy, serverTimestamp, signInWithEmailAndPassword, signOut };

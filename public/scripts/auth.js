@@ -1,17 +1,26 @@
-import { auth } from "./firebase-config.js";
-import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.0.2/firebase-auth.js";
-import { loadCounterView, loadProductionView } from "./ui.js";
+import { auth, signInWithEmailAndPassword, signOut } from './firebase.js';
+import { showCounterView, showProductionView } from './ui.js';
+import { loadOrders } from './orders.js';
 
-export const login = async (email, password) => {
-    try {
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        // 根据用户角色加载界面
-        if (userCredential.user.email?.includes('factory')) {
-            loadProductionView();
-        } else {
-            loadCounterView();
+export const initAuth = () => {
+    document.getElementById('login-btn').addEventListener('click', async () => {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        
+        try {
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+            
+            // 根据邮箱后缀判断角色
+            if (user.email.endsWith('@factory.com')) {
+                showProductionView();
+                loadProductionOrders();
+            } else {
+                showCounterView();
+                loadOrders();
+            }
+        } catch (error) {
+            alert('登入失败: ' + error.message);
         }
-    } catch (error) {
-        alert('登录失败: ' + error.message);
-    }
+    });
 };
