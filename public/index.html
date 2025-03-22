@@ -1,45 +1,48 @@
-<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>蛋糕店管理系统</title>
-    <link rel="stylesheet" href="/styles/styles.css">
-</head>
-<body>
-    <!-- 直接显示柜台界面 -->
-    <div id="counter-view" class="container">
-        <div class="header">
-            <h2>訂單管理</h2>
-            <button id="new-order-btn" class="btn btn-primary">新增訂單</button>
-        </div>
-        <div class="search-box">
-            <input type="text" id="search-input" placeholder="搜尋訂單...">
-        </div>
-        <div id="order-list"></div>
-        
-        <!-- 订单模态框 -->
-        <div id="order-modal" class="modal hidden">
-            <div class="modal-content">
-                <span class="close">&times;</span>
-                <h3>訂單詳情</h3>
-                <form id="order-form">
-                    <div class="form-group">
-                        <label>客戶姓名</label>
-                        <input type="text" id="customer-name" required>
-                    </div>
-                    <div class="form-group">
-                        <label>聯絡電話</label>
-                        <input type="tel" id="customer-phone" required>
-                    </div>
-                    <button type="submit" class="btn">提交訂單</button>
-                </form>
+<!-- 订单模态框 -->
+<div id="order-modal" class="modal hidden">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3>新增訂單</h3>
+        <form id="order-form">
+            <!-- 客户信息 -->
+            <div class="form-group">
+                <label for="customer-name">客戶姓名</label>
+                <input type="text" id="customer-name" required>
             </div>
-        </div>
-    </div>
+            
+            <div class="form-group">
+                <label for="customer-phone">聯絡電話</label>
+                <input type="tel" id="customer-phone" pattern="[0-9]{10}" required>
+            </div>
 
-    <script type="module" src="/scripts/firebase.js"></script>
-    <script type="module" src="/scripts/orders.js"></script>
-    <script type="module" src="/scripts/ui.js"></script>
-</body>
-</html>
+            <!-- 商品信息 -->
+            <div class="form-group">
+                <label>選擇商品</label>
+                <div id="product-list">
+                    <div class="product-item">
+                        <input type="checkbox" name="product" value="巧克力蛋糕" data-price="600">
+                        <label>巧克力蛋糕</label>
+                        <select class="size-select">
+                            <option value="S">S (+0)</option>
+                            <option value="M">M (+100)</option>
+                            <option value="L">L (+200)</option>
+                        </select>
+                        <input type="number" class="quantity" value="1" min="1">
+                    </div>
+                    <!-- 更多商品... -->
+                </div>
+            </div>
+
+            <!-- 其他信息 -->
+            <div class="form-group">
+                <label for="notes">備註</label>
+                <textarea id="notes" rows="3"></textarea>
+            </div>
+
+            <div class="form-footer">
+                <button type="submit" class="btn btn-primary">提交訂單</button>
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">取消</button>
+            </div>
+        </form>
+    </div>
+</div>
